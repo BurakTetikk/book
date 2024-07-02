@@ -24,6 +24,10 @@ public class UserService {
         return userRepository.findById(id).orElse(null);
     }
 
+    public User getUserByUsername(String username) {
+        return userRepository.findByUsername(username);
+    }
+
     public List<User> searchByUsername(String username) {
         return userRepository.findByUsernameContaining(username);
     }

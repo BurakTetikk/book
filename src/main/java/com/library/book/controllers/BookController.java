@@ -1,7 +1,9 @@
 package com.library.book.controllers;
 
 import com.library.book.models.Book;
+import com.library.book.models.User;
 import com.library.book.services.BookService;
+import com.library.book.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,9 +17,13 @@ public class BookController {
 
     @Autowired
     private BookService bookService;
+    @Autowired
+    private UserService userService;
 
     @PostMapping
-    public ResponseEntity<Book> createBook(Book book) {
+    public ResponseEntity<Book> createBook(@RequestBody Book book, @RequestParam String username) {
+        User user = userService.getUserByUsername(username);
+        book.setUser(user);
         return new ResponseEntity<>(bookService.saveBook(book), HttpStatus.CREATED);
     }
 
@@ -48,11 +54,11 @@ public class BookController {
     }
 
     @PutMapping("{id}")
-    public ResponseEntity<Book> updateBook (@PathVariable Long id, @RequestBody Book book) {
-
+    public ResponseEntity<Book> updateBook (@PathVariable Long id, @RequestBody Book book, @RequestParam String username) {
+        User user = userService.getUserByUsername(username);
         Book existingBook = bookService.getBookById(id);
 
-        if (existingBook != null) {
+        if (existingBook != null && existingBook.getUser().equals(user)) {
             existingBook.setTitle(book.getTitle());
             existingBook.setAuthor(book.getAuthor());
             existingBook.setISBN(book.getISBN());
@@ -62,6 +68,17 @@ public class BookController {
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+    }
+    @GetMapping
+    public ResponseEntity<List<Book>> getAllBooksByUsername(@RequestParam String username) {
+        User user = userService.getUserByUsername(username);
+        return new ResponseEntity<>(bookService.getAllBooksByUser(user), HttpStatus.OK);
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<Book>> searchBooksByUsernameAndTitle(@RequestParam String username, @RequestParam String title) {
+        User user = userService.getUserByUsername(username);
+        return new ResponseEntity<>(bookService.searchBooksByUserAndTitle(user, title), HttpStatus.OK);
     }
 
 }

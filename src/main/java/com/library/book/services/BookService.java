@@ -1,6 +1,7 @@
 package com.library.book.services;
 
 import com.library.book.models.Book;
+import com.library.book.models.User;
 import com.library.book.repositories.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -35,5 +36,13 @@ public class BookService {
 
     public List<Book> searchBooksByAuthor(String author) {
         return bookRepository.findByAuthorContaining(author);
+    }
+
+    public List<Book> getAllBooksByUser(User user) {
+        return bookRepository.findByUser(user);
+    }
+
+    public List<Book> searchBooksByUserAndTitle(User user, String title) {
+        return bookRepository.findByUserAndTitleContaining(user, title);
     }
 }
