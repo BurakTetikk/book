@@ -1,28 +1,37 @@
 package com.library.book.services;
 
-import com.library.book.models.Book;
-import com.library.book.models.User;
+import com.library.book.dto.BookDto;
+import com.library.book.entity.BookEntity;
+import com.library.book.entity.UserEntity;
+import com.library.book.mapper.MapperUtil;
 import com.library.book.repositories.BookRepository;
+import java.util.List;
+import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Service
+@RequiredArgsConstructor
 public class BookService {
 
-    @Autowired
-    private BookRepository bookRepository;
+    private final BookRepository bookRepository;
 
-    public Book saveBook(Book book) {
+    private final MapperUtil mapperUtil;
+
+    public BookEntity saveBook(BookEntity book) {
         return bookRepository.save(book);
     }
 
-    public List<Book> getAllBooks() {
-        return bookRepository.findAll();
+    public List<BookDto> getAllBooks() {
+
+        List<BookEntity> books = bookRepository.findAll();
+
+        // Burada mapper ile book entityyi bookdtoya convert edip dönüyoruz
+        return books.stream().map(bookEntity -> mapperUtil.convert(bookEntity, new BookDto())).collect(Collectors.toList());
     }
 
-    public Book getBookById(Long id) {
+    public BookEntity getBookById(Long id) {
         return bookRepository.findById(id).orElse(null);
     }
 
@@ -30,19 +39,19 @@ public class BookService {
         bookRepository.deleteById(id);
     }
 
-    public List<Book> searchBooksByTitle(String title) {
+    public List<BookEntity> searchBooksByTitle(String title) {
         return bookRepository.findByTitleContaining(title);
     }
 
-    public List<Book> searchBooksByAuthor(String author) {
+    public List<BookEntity> searchBooksByAuthor(String author) {
         return bookRepository.findByAuthorContaining(author);
     }
 
-    public List<Book> getAllBooksByUser(User user) {
+    public List<BookEntity> getAllBooksByUser(UserEntity user) {
         return bookRepository.findByUser(user);
     }
 
-    public List<Book> searchBooksByUserAndTitle(User user, String title) {
+    public List<BookEntity> searchBooksByUserAndTitle(UserEntity user, String title) {
         return bookRepository.findByUserAndTitleContaining(user, title);
     }
 }

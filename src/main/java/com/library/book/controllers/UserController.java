@@ -1,8 +1,8 @@
 package com.library.book.controllers;
 
-import com.library.book.models.User;
+import com.library.book.entity.UserEntity;
 import com.library.book.services.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,13 +11,14 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/users")
+@RequiredArgsConstructor  //@RequiredArgsConstructor kullandığında final olan alanları kendisi inject ediyor
 public class UserController {
 
-    @Autowired
-    private UserService userService;
+
+    private final UserService userService;
 
     @PostMapping
-    public ResponseEntity<User> createUser(@RequestBody User user) {
+    public ResponseEntity<UserEntity> createUser(@RequestBody UserEntity user) {
         try {
             return new ResponseEntity<>(userService.saveUser(user), HttpStatus.CREATED);
         } catch (IllegalArgumentException e) {
@@ -27,17 +28,17 @@ public class UserController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<List<User>> getAllUsers() {
+    public ResponseEntity<List<UserEntity>> getAllUsers() {
         return new ResponseEntity<>(userService.getAllUsers(), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<User> getUserById(@PathVariable Long id) {
+    public ResponseEntity<UserEntity> getUserById(@PathVariable Long id) {
         return new ResponseEntity<>(userService.getUserById(id), HttpStatus.OK);
     }
 
     @GetMapping("/searchByUsername")
-    public ResponseEntity<List<User>> searchByUsername(@RequestParam String username) {
+    public ResponseEntity<List<UserEntity>> searchByUsername(@RequestParam String username) {
         return new ResponseEntity<>(userService.searchByUsername(username), HttpStatus.OK);
     }
 }

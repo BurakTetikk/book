@@ -1,49 +1,57 @@
 package com.library.book.controllers;
 
-import com.library.book.models.Book;
-import com.library.book.models.User;
+import com.library.book.dto.BookDto;
+import com.library.book.entity.BookEntity;
+import com.library.book.entity.UserEntity;
 import com.library.book.services.BookService;
 import com.library.book.services.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@RequiredArgsConstructor //@RequiredArgsConstructor kullandığında final olan alanları kendisi inject ediyor
 @RequestMapping("/api/books")
 public class BookController {
 
-    @Autowired
-    private BookService bookService;
-    @Autowired
-    private UserService userService;
+    private final BookService bookService;
+    private final UserService userService;
 
     @PostMapping
-    public ResponseEntity<Book> createBook(@RequestBody Book book, @RequestParam String username) {
-        User user = userService.getUserByUsername(username);
+    public ResponseEntity<BookEntity> createBook(@RequestBody BookEntity book, @RequestParam String username) {
+        UserEntity user = userService.getUserByUsername(username);
         book.setUser(user);
         return new ResponseEntity<>(bookService.saveBook(book), HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Book> getBookById(@PathVariable Long id) {
+    public ResponseEntity<BookEntity> getBookById(@PathVariable Long id) {
         return new ResponseEntity<>(bookService.getBookById(id), HttpStatus.OK);
     }
 
+    //Şİmdilkik burada dto dönüş yaptım diğerlerine de uygularsın
     @GetMapping("/all")
-    public ResponseEntity<List<Book>> getAllBooks() {
+    public ResponseEntity<List<BookDto>> getAllBooks() {
         return new ResponseEntity<>(bookService.getAllBooks(), HttpStatus.OK);
     }
 
     @GetMapping("/searchByTitle")
-    public ResponseEntity<List<Book>> searchBookByTitle(@RequestParam String title) {
+    public ResponseEntity<List<BookEntity>> searchBookByTitle(@RequestParam String title) {
         return new ResponseEntity<>(bookService.searchBooksByTitle(title), HttpStatus.OK);
     }
 
     @GetMapping("/searchByAuthor")
-    public ResponseEntity<List<Book>> searchBookByAuthor(@RequestParam String author) {
+    public ResponseEntity<List<BookEntity>> searchBookByAuthor(@RequestParam String author) {
         return new ResponseEntity<>(bookService.searchBooksByAuthor(author), HttpStatus.OK);
     }
 
@@ -54,9 +62,9 @@ public class BookController {
     }
 
     @PutMapping("{id}")
-    public ResponseEntity<Book> updateBook (@PathVariable Long id, @RequestBody Book book, @RequestParam String username) {
-        User user = userService.getUserByUsername(username);
-        Book existingBook = bookService.getBookById(id);
+    public ResponseEntity<BookEntity> updateBook(@PathVariable Long id, @RequestBody BookEntity book, @RequestParam String username) {
+        UserEntity user = userService.getUserByUsername(username);
+        BookEntity existingBook = bookService.getBookById(id);
 
         if (existingBook != null && existingBook.getUser().equals(user)) {
             existingBook.setTitle(book.getTitle());
@@ -69,15 +77,16 @@ public class BookController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
+
     @GetMapping
-    public ResponseEntity<List<Book>> getAllBooksByUsername(@RequestParam String username) {
-        User user = userService.getUserByUsername(username);
+    public ResponseEntity<List<BookEntity>> getAllBooksByUsername(@RequestParam String username) {
+        UserEntity user = userService.getUserByUsername(username);
         return new ResponseEntity<>(bookService.getAllBooksByUser(user), HttpStatus.OK);
     }
 
     @GetMapping("/search")
-    public ResponseEntity<List<Book>> searchBooksByUsernameAndTitle(@RequestParam String username, @RequestParam String title) {
-        User user = userService.getUserByUsername(username);
+    public ResponseEntity<List<BookEntity>> searchBooksByUsernameAndTitle(@RequestParam String username, @RequestParam String title) {
+        UserEntity user = userService.getUserByUsername(username);
         return new ResponseEntity<>(bookService.searchBooksByUserAndTitle(user, title), HttpStatus.OK);
     }
 

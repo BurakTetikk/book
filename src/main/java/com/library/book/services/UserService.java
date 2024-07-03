@@ -1,7 +1,7 @@
 package com.library.book.services;
 
 import com.library.book.repositories.UserRepository;
-import com.library.book.models.User;
+import com.library.book.entity.UserEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,24 +15,24 @@ public class UserService {
 
 
 
-    public User saveUser(User user) {
+    public UserEntity saveUser(UserEntity user) {
         return userRepository.save(user);
     }
 
 
-    public User getUserById(Long id) {
+    public UserEntity getUserById(Long id) {
         return userRepository.findById(id).orElse(null);
     }
 
-    public User getUserByUsername(String username) {
+    public UserEntity getUserByUsername(String username) {
         return userRepository.findByUsername(username);
     }
 
-    public List<User> searchByUsername(String username) {
+    public List<UserEntity> searchByUsername(String username) {
         return userRepository.findByUsernameContaining(username);
     }
 
-    public List<User> getAllUsers() {
+    public List<UserEntity> getAllUsers() {
         return userRepository.findAll();
     }
 
