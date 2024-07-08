@@ -12,9 +12,4 @@ public class BookApplication {
 		SpringApplication.run(BookApplication.class, args);
 	}
 
-	@Bean
-	public ModelMapper modelMapper(){
-		return new ModelMapper();
-	}
-
 }

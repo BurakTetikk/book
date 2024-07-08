@@ -28,14 +28,14 @@ public class BookController {
     private final UserService userService;
 
     @PostMapping
-    public ResponseEntity<BookEntity> createBook(@RequestBody BookEntity book, @RequestParam String username) {
+    public ResponseEntity<BookDto> createBook(@RequestBody BookDto book, @RequestParam String username) {
         UserEntity user = userService.getUserByUsername(username);
         book.setUser(user);
         return new ResponseEntity<>(bookService.saveBook(book), HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<BookEntity> getBookById(@PathVariable Long id) {
+    public ResponseEntity<BookDto> getBookById(@PathVariable Long id) {
         return new ResponseEntity<>(bookService.getBookById(id), HttpStatus.OK);
     }
 
@@ -62,9 +62,9 @@ public class BookController {
     }
 
     @PutMapping("{id}")
-    public ResponseEntity<BookEntity> updateBook(@PathVariable Long id, @RequestBody BookEntity book, @RequestParam String username) {
+    public ResponseEntity<BookDto> updateBook(@PathVariable Long id, @RequestBody BookDto book, @RequestParam String username) {
         UserEntity user = userService.getUserByUsername(username);
-        BookEntity existingBook = bookService.getBookById(id);
+        BookDto existingBook = bookService.getBookById(id);
 
         if (existingBook != null && existingBook.getUser().equals(user)) {
             existingBook.setTitle(book.getTitle());

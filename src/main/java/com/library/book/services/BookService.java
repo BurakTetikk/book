@@ -6,6 +6,7 @@ import com.library.book.entity.UserEntity;
 import com.library.book.mapper.MapperUtil;
 import com.library.book.repositories.BookRepository;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,12 +16,14 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class BookService {
 
-    private final BookRepository bookRepository;
+    private final BookRepository bookRepository;//TODO neden UserRepository yok?
 
     private final MapperUtil mapperUtil;
 
-    public BookEntity saveBook(BookEntity book) {
-        return bookRepository.save(book);
+    public BookDto saveBook(BookDto book) {
+        BookEntity bookEntity = mapperUtil.convert(book, new BookEntity());
+        bookRepository.save(bookEntity);
+        return mapperUtil.convert(bookEntity, new BookDto());
     }
 
     public List<BookDto> getAllBooks() {
@@ -31,8 +34,16 @@ public class BookService {
         return books.stream().map(bookEntity -> mapperUtil.convert(bookEntity, new BookDto())).collect(Collectors.toList());
     }
 
-    public BookEntity getBookById(Long id) {
-        return bookRepository.findById(id).orElse(null);
+    public BookDto getBookById(Long id) {
+
+            BookEntity book = bookRepository.findBookById(id);
+
+            if (book == null) {
+                throw new RuntimeException("Book not found with id: " + id);
+            }
+
+            return mapperUtil.convert(book, new BookDto());
+
     }
 
     public void deleteBook(Long id) {
