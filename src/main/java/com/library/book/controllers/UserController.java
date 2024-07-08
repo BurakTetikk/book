@@ -1,5 +1,6 @@
 package com.library.book.controllers;
 
+import com.library.book.dto.UserDto;
 import com.library.book.entity.UserEntity;
 import com.library.book.services.UserService;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +19,7 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping
-    public ResponseEntity<UserEntity> createUser(@RequestBody UserEntity user) {
+    public ResponseEntity<UserDto> createUser(@RequestBody UserDto user) {
         try {
             return new ResponseEntity<>(userService.saveUser(user), HttpStatus.CREATED);
         } catch (IllegalArgumentException e) {
@@ -28,17 +29,17 @@ public class UserController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<List<UserEntity>> getAllUsers() {
+    public ResponseEntity<List<UserDto>> getAllUsers() {
         return new ResponseEntity<>(userService.getAllUsers(), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserEntity> getUserById(@PathVariable Long id) {
+    public ResponseEntity<UserDto> getUserById(@PathVariable Long id) {
         return new ResponseEntity<>(userService.getUserById(id), HttpStatus.OK);
     }
 
     @GetMapping("/searchByUsername")
-    public ResponseEntity<List<UserEntity>> searchByUsername(@RequestParam String username) {
+    public ResponseEntity<List<UserDto>> searchByUsername(@RequestParam String username) {
         return new ResponseEntity<>(userService.searchByUsername(username), HttpStatus.OK);
     }
 }
