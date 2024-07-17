@@ -108,5 +108,16 @@ public class BookController {
                                                          @RequestParam int size) {
         return new ResponseEntity<>(bookService.getAllPage(page, size), HttpStatus.OK);
     }
+    @GetMapping("/price-less-than")
+    public ResponseEntity<List<BookDto>> getBooksPriceLessThan(@RequestParam Double price) {
+
+
+        return new ResponseEntity<>(bookService.getBooksLessThan(price), HttpStatus.OK);
+    }
+    @GetMapping("author-price")
+    public ResponseEntity<List<BookDto>> getAllBooksAuthorContainingAndPriceLessThan(@RequestParam String author,
+                                                                                     @RequestParam Double price) {
+        return new ResponseEntity<>(bookService.getAllBooksAuthorContainingAndPriceLessThan(author, price), HttpStatus.OK);
+    }
 
 }

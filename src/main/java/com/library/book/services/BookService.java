@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -82,10 +83,30 @@ public class BookService {
     }
 
     public Page<BookDto> getAllPage(int page, int size) {
-        Pageable pageable = PageRequest.of(page - 1, size);
+        Pageable pageable = PageRequest.of(page - 1, size, Sort.by("title").ascending());
 
         Page<BookEntity> bookEntities = bookRepository.findAll(pageable);
 
         return bookEntities.map(bookEntity -> mapperUtil.convert(bookEntity, new BookDto()));
+    }
+
+    public List<BookDto> getBooksLessThan(Double price) {
+        List<BookEntity> bookEntities = bookRepository.findByPriceLessThan(price);
+
+        return bookEntities
+                .stream()
+                .map(bookEntity -> mapperUtil.convert(bookEntity, new BookDto()))
+                .collect(Collectors.toList());
+    }
+
+    public List<BookDto> getAllBooksAuthorContainingAndPriceLessThan(String author, Double price) {
+
+        List<BookEntity> bookEntities = bookRepository.findByAuthorContainingAndPriceLessThan(author, price);
+
+        return bookEntities
+                .stream()
+                .map(bookEntity -> mapperUtil.convert(bookEntity, new BookDto()))
+                .collect(Collectors.toList());
+
     }
 }

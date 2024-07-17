@@ -7,6 +7,8 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -22,6 +24,11 @@ public interface BookRepository extends JpaRepository<BookEntity, Long> {
     List<BookEntity> findByUserAndTitleContaining(UserEntity user, String title);
 
     Page<BookEntity> findBooksByTitleContaining(String title, Pageable pageable);
+
+    List<BookEntity> findByPriceLessThan(Double price);
+
+    @Query("select b from BookEntity b where b.author like %:author% and b.price < :price")
+    List<BookEntity> findByAuthorContainingAndPriceLessThan(@Param("author") String author, @Param("price") Double price);
 
 
 }
