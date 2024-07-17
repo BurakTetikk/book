@@ -9,6 +9,9 @@ import com.library.book.repositories.BookRepository;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -68,5 +71,21 @@ public class BookService {
     public List<BookDto> searchBooksByUserAndTitle(UserDto userDto, String title) {
         List<BookEntity> books = bookRepository.findByUserAndTitleContaining(mapperUtil.convert(userDto, new UserEntity()), title);
         return books.stream().map(bookEntity -> mapperUtil.convert(bookEntity, new BookDto())).collect(Collectors.toList());
+    }
+
+    public Page<BookDto> searchBooksByTitle(String title, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page<BookEntity> bookEntities= bookRepository.findBooksByTitleContaining(title, pageable);
+
+        return bookEntities.map(bookEntity -> mapperUtil.convert(bookEntity, new BookDto()));
+    }
+
+    public Page<BookDto> getAllPage(int page, int size) {
+        Pageable pageable = PageRequest.of(page - 1, size);
+
+        Page<BookEntity> bookEntities = bookRepository.findAll(pageable);
+
+        return bookEntities.map(bookEntity -> mapperUtil.convert(bookEntity, new BookDto()));
     }
 }

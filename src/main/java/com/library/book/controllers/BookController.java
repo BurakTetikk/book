@@ -9,6 +9,7 @@ import com.library.book.services.BookService;
 import com.library.book.services.UserService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -93,6 +94,19 @@ public class BookController {
     public ResponseEntity<List<BookDto>> searchBooksByUsernameAndTitle(@RequestParam String username, @RequestParam String title) {
         UserDto user = userService.getUserByUsername(username);
         return new ResponseEntity<>(bookService.searchBooksByUserAndTitle(user, title), HttpStatus.OK);
+    }
+
+    @GetMapping("/searchPage")
+    public ResponseEntity<Page<BookDto>> searchBooksByTitle(@RequestParam String title,
+                                                            @RequestParam int page,
+                                                            @RequestParam int size) {
+        return new ResponseEntity<>(bookService.searchBooksByTitle(title, page, size), HttpStatus.OK);
+    }
+
+    @GetMapping("/search-page")
+    public ResponseEntity<Page<BookDto>> getAllBooksPage(@RequestParam int page,
+                                                         @RequestParam int size) {
+        return new ResponseEntity<>(bookService.getAllPage(page, size), HttpStatus.OK);
     }
 
 }
