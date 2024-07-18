@@ -29,12 +29,12 @@ public class BookService {
         return mapperUtil.convert(bookEntity, new BookDto());
     }
 
-    public List<BookDto> getAllBooks() {
+    public Page<BookDto> getAllBooks(Pageable pageable) {
 
-        List<BookEntity> books = bookRepository.findAll();
+        Page<BookEntity> books = bookRepository.findAll(pageable);
 
         // Burada mapper ile book entityyi bookdtoya convert edip dönüyoruz
-        return books.stream().map(bookEntity -> mapperUtil.convert(bookEntity, new BookDto())).collect(Collectors.toList());
+        return books.map(bookEntity -> mapperUtil.convert(bookEntity, new BookDto()));
     }
 
     public BookDto getBookById(Long id) {
@@ -64,14 +64,14 @@ public class BookService {
         return books.map(bookEntity -> mapperUtil.convert(bookEntity, new BookDto()));
     }
 
-    public List<BookDto> getAllBooksByUser(UserDto userDto) {
-        List<BookEntity> books = bookRepository.findByUser(mapperUtil.convert(userDto, new UserEntity()));
-        return books.stream().map(bookEntity -> mapperUtil.convert(bookEntity, new BookDto())).collect(Collectors.toList());
+    public Page<BookDto> getAllBooksByUser(UserDto userDto, Pageable pageable) {
+        Page<BookEntity> books = bookRepository.findByUser(mapperUtil.convert(userDto, new UserEntity()), pageable);
+        return books.map(bookEntity -> mapperUtil.convert(bookEntity, new BookDto()));
     }
 
-    public List<BookDto> searchBooksByUserAndTitle(UserDto userDto, String title) {
-        List<BookEntity> books = bookRepository.findByUserAndTitleContaining(mapperUtil.convert(userDto, new UserEntity()), title);
-        return books.stream().map(bookEntity -> mapperUtil.convert(bookEntity, new BookDto())).collect(Collectors.toList());
+    public Page<BookDto> searchBooksByUserAndTitle(UserDto userDto, String title, Pageable pageable) {
+        Page<BookEntity> books = bookRepository.findByUserAndTitleContaining(mapperUtil.convert(userDto, new UserEntity()), title, pageable);
+        return books.map(bookEntity -> mapperUtil.convert(bookEntity, new BookDto()));
     }
 
     public Page<BookDto> searchBooksByTitle(String title, int page, int size) {

@@ -17,11 +17,11 @@ public interface BookRepository extends JpaRepository<BookEntity, Long> {
 
     Page<BookEntity> findByAuthorContaining(String title, Pageable pageable);
 
-    List<BookEntity> findByUser(UserEntity user);
+    Page<BookEntity> findByUser(UserEntity user, Pageable pageable);
 
     BookEntity findBookById(Long id);
 
-    List<BookEntity> findByUserAndTitleContaining(UserEntity user, String title);
+    Page<BookEntity> findByUserAndTitleContaining(UserEntity user, String title, Pageable pageable);
 
     Page<BookEntity> findBooksByTitleContaining(String title, Pageable pageable);
 

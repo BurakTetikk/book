@@ -51,8 +51,8 @@ public class BookController {
 
     //Şİmdilkik burada dto dönüş yaptım diğerlerine de uygularsın
     @GetMapping("/all")
-    public ResponseEntity<List<BookDto>> getAllBooks() {
-        return new ResponseEntity<>(bookService.getAllBooks(), HttpStatus.OK);
+    public ResponseEntity<Page<BookDto>> getAllBooks(@PageableDefault(sort = "author", direction = Sort.Direction.ASC) Pageable pageable) {
+        return new ResponseEntity<>(bookService.getAllBooks(pageable), HttpStatus.OK);
     }
 
     @GetMapping("/search-title")
@@ -93,15 +93,18 @@ public class BookController {
     }
 
     @GetMapping
-    public ResponseEntity<List<BookDto>> getAllBooksByUsername(@RequestParam String username) {
+    public ResponseEntity<Page<BookDto>> getAllBooksByUsername(@RequestParam String username,
+                                                               @PageableDefault(sort = "title", direction = Sort.Direction.DESC) Pageable pageable) {
         UserDto user = userService.getUserByUsername(username);
-        return new ResponseEntity<>(bookService.getAllBooksByUser(user), HttpStatus.OK);
+        return new ResponseEntity<>(bookService.getAllBooksByUser(user, pageable), HttpStatus.OK);
     }
 
     @GetMapping("/search")
-    public ResponseEntity<List<BookDto>> searchBooksByUsernameAndTitle(@RequestParam String username, @RequestParam String title) {
+    public ResponseEntity<Page<BookDto>> searchBooksByUsernameAndTitle(@RequestParam String username,
+                                                                       @RequestParam String title,
+                                                                       @PageableDefault Pageable pageable) {
         UserDto user = userService.getUserByUsername(username);
-        return new ResponseEntity<>(bookService.searchBooksByUserAndTitle(user, title), HttpStatus.OK);
+        return new ResponseEntity<>(bookService.searchBooksByUserAndTitle(user, title, pageable), HttpStatus.OK);
     }
 
     @GetMapping("/searchPage")
