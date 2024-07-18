@@ -46,17 +46,15 @@ public class UserService {
         return mapperUtil.convert(user, new UserDto());
     }
 
-    public List<UserDto> searchByUsername(String username) {
-        List<UserEntity> users = userRepository.findByUsernameContaining(username);
-        return users.stream().map(userEntity -> mapperUtil.convert(userEntity, new UserDto())).collect(Collectors.toList());
+    public Page<UserDto> searchByUsername(String username, Pageable pageable) {
+        Page<UserEntity> users = userRepository.findByUsernameContaining(username, pageable);
+        return users.map(userEntity -> mapperUtil.convert(userEntity, new UserDto()));
     }
 
-    public List<UserDto> getAllUsers() {
-        List<UserEntity> users = userRepository.findAll();
+    public Page<UserDto> getAllUsers(Pageable pageable) {
+        Page<UserEntity> users = userRepository.findAll(pageable);
         return users
-                .stream()
-                .map(userEntity -> mapperUtil.convert(userEntity, new UserDto()))
-                .collect(Collectors.toList());
+                .map(userEntity -> mapperUtil.convert(userEntity, new UserDto()));
     }
 
 

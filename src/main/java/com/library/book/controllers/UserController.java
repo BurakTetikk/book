@@ -5,6 +5,9 @@ import com.library.book.entity.UserEntity;
 import com.library.book.services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -30,8 +33,8 @@ public class UserController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<List<UserDto>> getAllUsers() {
-        return new ResponseEntity<>(userService.getAllUsers(), HttpStatus.OK);
+    public ResponseEntity<Page<UserDto>> getAllUsers(@PageableDefault(sort = "username", direction = Sort.Direction.ASC) Pageable pageable) {
+        return new ResponseEntity<>(userService.getAllUsers(pageable), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
@@ -39,8 +42,8 @@ public class UserController {
         return new ResponseEntity<>(userService.getUserById(id), HttpStatus.OK);
     }
 
-    @GetMapping("/searchByUsername")
-    public ResponseEntity<List<UserDto>> searchByUsername(@RequestParam String username) {
-        return new ResponseEntity<>(userService.searchByUsername(username), HttpStatus.OK);
+    @GetMapping("/search-username")
+    public ResponseEntity<Page<UserDto>> searchByUsername(@RequestParam String username, @PageableDefault(sort = "username", direction = Sort.Direction.ASC) Pageable pageable) {
+        return new ResponseEntity<>(userService.searchByUsername(username, pageable), HttpStatus.OK);
     }
 }
