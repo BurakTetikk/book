@@ -5,6 +5,9 @@ import com.library.book.mapper.MapperUtil;
 import com.library.book.repositories.UserRepository;
 import com.library.book.entity.UserEntity;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -50,7 +53,10 @@ public class UserService {
 
     public List<UserDto> getAllUsers() {
         List<UserEntity> users = userRepository.findAll();
-        return users.stream().map(userEntity -> mapperUtil.convert(userEntity, new UserDto())).collect(Collectors.toList());
+        return users
+                .stream()
+                .map(userEntity -> mapperUtil.convert(userEntity, new UserDto()))
+                .collect(Collectors.toList());
     }
 
 

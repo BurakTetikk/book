@@ -10,6 +10,10 @@ import com.library.book.services.UserService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -51,14 +55,18 @@ public class BookController {
         return new ResponseEntity<>(bookService.getAllBooks(), HttpStatus.OK);
     }
 
-    @GetMapping("/searchByTitle")
-    public ResponseEntity<List<BookDto>> searchBookByTitle(@RequestParam String title) {
-        return new ResponseEntity<>(bookService.searchBooksByTitle(title), HttpStatus.OK);
+    @GetMapping("/search-title")
+    public ResponseEntity<Page<BookDto>> searchBookByTitle(@RequestParam String title,
+                                                           @PageableDefault(sort = {"title"}) Pageable pageable) {
+
+       // Pageable pageable = PageRequest.of(page - 1, size);
+
+        return new ResponseEntity<>(bookService.searchBooksByTitle(title, pageable), HttpStatus.OK);
     }
 
-    @GetMapping("/searchByAuthor")
-    public ResponseEntity<List<BookDto>> searchBookByAuthor(@RequestParam String author) {
-        return new ResponseEntity<>(bookService.searchBooksByAuthor(author), HttpStatus.OK);
+    @GetMapping("/search-author")
+    public ResponseEntity<Page<BookDto>> searchBookByAuthor(@RequestParam String author, @PageableDefault(sort = "title", direction = Sort.Direction.ASC) Pageable pageable) {
+        return new ResponseEntity<>(bookService.searchBooksByAuthor(author, pageable), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
@@ -109,15 +117,26 @@ public class BookController {
         return new ResponseEntity<>(bookService.getAllPage(page, size), HttpStatus.OK);
     }
     @GetMapping("/price-less-than")
-    public ResponseEntity<List<BookDto>> getBooksPriceLessThan(@RequestParam Double price) {
+    public ResponseEntity<Page<BookDto>> getBooksPriceLessThan(@RequestParam Double price,
+                                                               @RequestParam int page,
+                                                               @RequestParam int size) {
+        Pageable pageable = PageRequest.of(page - 1, size, Sort.by("price").ascending());
 
-
-        return new ResponseEntity<>(bookService.getBooksLessThan(price), HttpStatus.OK);
+        return new ResponseEntity<>(bookService.getBooksLessThan(price, pageable), HttpStatus.OK);
     }
-    @GetMapping("author-price")
+    @GetMapping("/author-price")
     public ResponseEntity<List<BookDto>> getAllBooksAuthorContainingAndPriceLessThan(@RequestParam String author,
                                                                                      @RequestParam Double price) {
         return new ResponseEntity<>(bookService.getAllBooksAuthorContainingAndPriceLessThan(author, price), HttpStatus.OK);
+    }
+
+    @GetMapping("/stock-price")
+    public ResponseEntity<Page<BookDto>> getAllBooksStockLessThanAndPriceLessThan(@RequestParam Integer stock,
+                                                                                  @RequestParam Double price,
+                                                                                  @PageableDefault(sort = "stock") Pageable pageable) {
+
+        //Pageable pageable = PageRequest.of(page - 1, size, Sort.by("stock").ascending());
+        return new ResponseEntity<>(bookService.getAllBooksStockLessThanAndPriceLessThan(stock, price, pageable), HttpStatus.OK);
     }
 
 }

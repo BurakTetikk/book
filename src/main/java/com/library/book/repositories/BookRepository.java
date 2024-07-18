@@ -13,9 +13,9 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface BookRepository extends JpaRepository<BookEntity, Long> {
-    List<BookEntity> findByTitleContaining(String title);
+    Page<BookEntity> findByTitleContaining(String title, Pageable pageable);
 
-    List<BookEntity> findByAuthorContaining(String title);
+    Page<BookEntity> findByAuthorContaining(String title, Pageable pageable);
 
     List<BookEntity> findByUser(UserEntity user);
 
@@ -25,10 +25,13 @@ public interface BookRepository extends JpaRepository<BookEntity, Long> {
 
     Page<BookEntity> findBooksByTitleContaining(String title, Pageable pageable);
 
-    List<BookEntity> findByPriceLessThan(Double price);
+    Page<BookEntity> findByPriceLessThan(Double price, Pageable pageable);
 
+    //SQL Filter
     @Query("select b from BookEntity b where b.author like %:author% and b.price < :price")
     List<BookEntity> findByAuthorContainingAndPriceLessThan(@Param("author") String author, @Param("price") Double price);
+    @Query("select b from BookEntity b where b.stock < :stock and b.price < :price")
+    Page<BookEntity> findByStockLessThanAndPriceLessThan(@Param("stock") Integer stock, @Param("price") Double price, Pageable pageable);
 
 
 }

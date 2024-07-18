@@ -53,15 +53,15 @@ public class BookService {
         bookRepository.deleteById(id);
     }
 
-    public List<BookDto> searchBooksByTitle(String title) {
-        List<BookEntity> books = bookRepository.findByTitleContaining(title);
+    public Page<BookDto> searchBooksByTitle(String title, Pageable pageable) {
+        Page<BookEntity> books = bookRepository.findByTitleContaining(title, pageable);
 
-        return books.stream().map(bookEntity -> mapperUtil.convert(bookEntity, new BookDto())).collect(Collectors.toList());
+        return books.map(bookEntity -> mapperUtil.convert(bookEntity, new BookDto()));
     }
 
-    public List<BookDto> searchBooksByAuthor(String author) {
-        List<BookEntity> books = bookRepository.findByAuthorContaining(author);
-        return books.stream().map(bookEntity -> mapperUtil.convert(bookEntity, new BookDto())).collect(Collectors.toList());
+    public Page<BookDto> searchBooksByAuthor(String author, Pageable pageable) {
+        Page<BookEntity> books = bookRepository.findByAuthorContaining(author, pageable);
+        return books.map(bookEntity -> mapperUtil.convert(bookEntity, new BookDto()));
     }
 
     public List<BookDto> getAllBooksByUser(UserDto userDto) {
@@ -90,13 +90,11 @@ public class BookService {
         return bookEntities.map(bookEntity -> mapperUtil.convert(bookEntity, new BookDto()));
     }
 
-    public List<BookDto> getBooksLessThan(Double price) {
-        List<BookEntity> bookEntities = bookRepository.findByPriceLessThan(price);
+    public Page<BookDto> getBooksLessThan(Double price, Pageable pageable) {
+        Page<BookEntity> bookEntities = bookRepository.findByPriceLessThan(price, pageable);
 
         return bookEntities
-                .stream()
-                .map(bookEntity -> mapperUtil.convert(bookEntity, new BookDto()))
-                .collect(Collectors.toList());
+                .map(bookEntity -> mapperUtil.convert(bookEntity, new BookDto()));
     }
 
     public List<BookDto> getAllBooksAuthorContainingAndPriceLessThan(String author, Double price) {
@@ -108,5 +106,12 @@ public class BookService {
                 .map(bookEntity -> mapperUtil.convert(bookEntity, new BookDto()))
                 .collect(Collectors.toList());
 
+    }
+
+    public Page<BookDto> getAllBooksStockLessThanAndPriceLessThan(Integer stock, Double price, Pageable pageable) {
+
+        Page<BookEntity> bookEntities = bookRepository.findByStockLessThanAndPriceLessThan(stock, price, pageable);
+
+        return bookEntities.map(bookEntity -> mapperUtil.convert(bookEntity, new BookDto()));
     }
 }
