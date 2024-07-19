@@ -9,6 +9,4 @@ import lombok.*;
 public class ErrorDetails {
     private String message;
     private String details;
-    private long timestamp;
-
 }

@@ -4,6 +4,7 @@ import com.library.book.dto.BookDto;
 import com.library.book.dto.UserDto;
 import com.library.book.entity.BookEntity;
 import com.library.book.entity.UserEntity;
+import com.library.book.exceptions.BadRequestException;
 import com.library.book.mapper.MapperUtil;
 import com.library.book.services.BookService;
 import com.library.book.services.UserService;

@@ -4,9 +4,12 @@ import com.library.book.dto.BookDto;
 import com.library.book.dto.UserDto;
 import com.library.book.entity.BookEntity;
 import com.library.book.entity.UserEntity;
+import com.library.book.exceptions.BadRequestException;
+import com.library.book.exceptions.ResourceNotFoundException;
 import com.library.book.mapper.MapperUtil;
 import com.library.book.repositories.BookRepository;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -39,11 +42,13 @@ public class BookService {
 
     public BookDto getBookById(Long id) {
 
-            BookEntity book = bookRepository.findBookById(id);
+        if (id == null) {
+            throw new BadRequestException("ID is empty or null!!");
+        }
 
-            if (book == null) {
-                throw new RuntimeException("Book not found with id: " + id);
-            }
+           BookEntity book = bookRepository
+                   .findById(id)
+                   .orElseThrow(() -> new ResourceNotFoundException("Book not found with id: " + id));
 
             return mapperUtil.convert(book, new BookDto());
 
@@ -54,13 +59,23 @@ public class BookService {
     }
 
     public Page<BookDto> searchBooksByTitle(String title, Pageable pageable) {
+
         Page<BookEntity> books = bookRepository.findByTitleContaining(title, pageable);
+
+        if (books.isEmpty()) {
+            throw new ResourceNotFoundException("Book not found with title: " + title);
+        }
 
         return books.map(bookEntity -> mapperUtil.convert(bookEntity, new BookDto()));
     }
 
     public Page<BookDto> searchBooksByAuthor(String author, Pageable pageable) {
+
         Page<BookEntity> books = bookRepository.findByAuthorContaining(author, pageable);
+
+        if (books.isEmpty()) {
+            throw new ResourceNotFoundException("Book not found with author: " + author);
+        }
         return books.map(bookEntity -> mapperUtil.convert(bookEntity, new BookDto()));
     }
 
