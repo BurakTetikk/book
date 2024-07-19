@@ -1,6 +1,7 @@
 package com.library.book.services;
 
 import com.library.book.dto.UserDto;
+import com.library.book.exceptions.ResourceNotFoundException;
 import com.library.book.mapper.MapperUtil;
 import com.library.book.repositories.UserRepository;
 import com.library.book.entity.UserEntity;
@@ -31,23 +32,30 @@ public class UserService {
 
 
     public UserDto getUserById(Long id) {
-        UserEntity user = userRepository.findById(id).orElse(null);
+        UserEntity user = userRepository
+                .findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: "+ id));
 
-        if (user != null) {
             return mapperUtil.convert(user, new UserDto());
-        } else {
-            throw new RuntimeException("User not found with id: " + id);
-        }
+
     }
 
     public UserDto getUserByUsername(String username) {
         UserEntity user = userRepository.findByUsername(username);
+
+        if (user == null) {
+            throw new ResourceNotFoundException("User not found with username: " + username);
+        }
 
         return mapperUtil.convert(user, new UserDto());
     }
 
     public Page<UserDto> searchByUsername(String username, Pageable pageable) {
         Page<UserEntity> users = userRepository.findByUsernameContaining(username, pageable);
+
+        if (users.isEmpty()){
+            throw new ResourceNotFoundException("User not found with username: " + username);
+        }
         return users.map(userEntity -> mapperUtil.convert(userEntity, new UserDto()));
     }
 
@@ -56,7 +64,4 @@ public class UserService {
         return users
                 .map(userEntity -> mapperUtil.convert(userEntity, new UserDto()));
     }
-
-
-
 }

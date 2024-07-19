@@ -33,5 +33,8 @@ public interface BookRepository extends JpaRepository<BookEntity, Long> {
     @Query("select b from BookEntity b where b.stock < :stock and b.price < :price")
     Page<BookEntity> findByStockLessThanAndPriceLessThan(@Param("stock") Integer stock, @Param("price") Double price, Pageable pageable);
 
+    @Query("select b from BookEntity b where b.user.username = :username")
+    Page<BookEntity> findByUsername(@Param("username") String username, Pageable pageable);
+
 
 }

@@ -94,7 +94,7 @@ public class BookController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<BookDto>> getAllBooksByUsername(@RequestParam String username,
+    public ResponseEntity<Page<BookDto>> getAllBooksByUser(@RequestParam String username,
                                                                @PageableDefault(sort = "title", direction = Sort.Direction.DESC) Pageable pageable) {
         UserDto user = userService.getUserByUsername(username);
         return new ResponseEntity<>(bookService.getAllBooksByUser(user, pageable), HttpStatus.OK);
@@ -141,6 +141,12 @@ public class BookController {
 
         //Pageable pageable = PageRequest.of(page - 1, size, Sort.by("stock").ascending());
         return new ResponseEntity<>(bookService.getAllBooksStockLessThanAndPriceLessThan(stock, price, pageable), HttpStatus.OK);
+    }
+
+    @GetMapping("/search-username")
+    public ResponseEntity<Page<BookDto>> getAllBooksByUsername(@RequestParam String username,
+                                                               @PageableDefault Pageable pageable) {
+        return new ResponseEntity<>(bookService.getAllBookByUsername(username, pageable), HttpStatus.OK);
     }
 
 }

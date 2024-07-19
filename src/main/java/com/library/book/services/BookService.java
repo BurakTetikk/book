@@ -40,7 +40,7 @@ public class BookService {
         return books.map(bookEntity -> mapperUtil.convert(bookEntity, new BookDto()));
     }
 
-    public BookDto getBookById(Long id) {
+    public BookDto getBookById(Long id) {//TODO invalid girişleri nasıl yaparsın?
 
         if (id == null) {
             throw new BadRequestException("ID is empty or null!!");
@@ -81,6 +81,10 @@ public class BookService {
 
     public Page<BookDto> getAllBooksByUser(UserDto userDto, Pageable pageable) {
         Page<BookEntity> books = bookRepository.findByUser(mapperUtil.convert(userDto, new UserEntity()), pageable);
+
+        if (books.isEmpty()) {
+            throw new ResourceNotFoundException("Book not found with user: " + userDto);
+        }
         return books.map(bookEntity -> mapperUtil.convert(bookEntity, new BookDto()));
     }
 
@@ -97,6 +101,7 @@ public class BookService {
         return bookEntities.map(bookEntity -> mapperUtil.convert(bookEntity, new BookDto()));
     }
 
+    //pagination için farklı bir kullanım
     public Page<BookDto> getAllPage(int page, int size) {
         Pageable pageable = PageRequest.of(page - 1, size, Sort.by("title").ascending());
 
@@ -128,5 +133,15 @@ public class BookService {
         Page<BookEntity> bookEntities = bookRepository.findByStockLessThanAndPriceLessThan(stock, price, pageable);
 
         return bookEntities.map(bookEntity -> mapperUtil.convert(bookEntity, new BookDto()));
+    }
+
+    public Page<BookDto> getAllBookByUsername(String username, Pageable pageable) {
+        Page<BookEntity> books = bookRepository.findByUsername(username, pageable);
+
+        if (books.isEmpty()) {
+            throw new ResourceNotFoundException("Book not found with username: " + username);
+        }
+
+        return books.map(bookEntity -> mapperUtil.convert(bookEntity, new BookDto()));
     }
 }
