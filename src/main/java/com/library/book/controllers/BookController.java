@@ -27,6 +27,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import static com.library.book.utils.ValidationUtils.isValid;
+
 @RestController
 @RequiredArgsConstructor //@RequiredArgsConstructor kullandığında final olan alanları kendisi inject ediyor
 @RequestMapping("/api/books")
@@ -46,8 +48,15 @@ public class BookController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<BookDto> getBookById(@PathVariable Long id) {
-        return new ResponseEntity<>(bookService.getBookById(id), HttpStatus.OK);
+    public ResponseEntity<BookDto> getBookById(@PathVariable String id) {
+        Long bookId;
+
+        try {
+            bookId = Long.parseLong(id);
+        } catch (NumberFormatException e) {
+            throw new BadRequestException("Invalid ID format!!");
+        }
+        return new ResponseEntity<>(bookService.getBookById(bookId), HttpStatus.OK);
     }
 
     //Şİmdilkik burada dto dönüş yaptım diğerlerine de uygularsın
@@ -125,29 +134,29 @@ public class BookController {
                                                                @RequestParam int page,
                                                                @RequestParam int size) {
         Pageable pageable = PageRequest.of(page - 1, size, Sort.by("price").ascending());
-        Double bookPrice;
 
-        try {
-            bookPrice = Double.parseDouble(price);
-        } catch (NumberFormatException e) {
-            throw new BadRequestException("Invalid format!!");
-        }
+        Double bookPrice = isValid(price).doubleValue();
 
         return new ResponseEntity<>(bookService.getBooksLessThan(bookPrice, pageable), HttpStatus.OK);
     }
     @GetMapping("/author-price")
     public ResponseEntity<List<BookDto>> getAllBooksAuthorContainingAndPriceLessThan(@RequestParam String author,
-                                                                                     @RequestParam Double price) {
-        return new ResponseEntity<>(bookService.getAllBooksAuthorContainingAndPriceLessThan(author, price), HttpStatus.OK);
+                                                                                     @RequestParam String price) {
+        Double bookPrice = isValid(price).doubleValue();
+
+        return new ResponseEntity<>(bookService.getAllBooksAuthorContainingAndPriceLessThan(author, bookPrice), HttpStatus.OK);
     }
 
     @GetMapping("/stock-price")
-    public ResponseEntity<Page<BookDto>> getAllBooksStockLessThanAndPriceLessThan(@RequestParam Integer stock,
-                                                                                  @RequestParam Double price,
+    public ResponseEntity<Page<BookDto>> getAllBooksStockLessThanAndPriceLessThan(@RequestParam String stock,
+                                                                                  @RequestParam String price,
                                                                                   @PageableDefault(sort = "stock") Pageable pageable) {
 
         //Pageable pageable = PageRequest.of(page - 1, size, Sort.by("stock").ascending());
-        return new ResponseEntity<>(bookService.getAllBooksStockLessThanAndPriceLessThan(stock, price, pageable), HttpStatus.OK);
+        Integer bookStock = isValid(stock).intValue();
+        Double bookPrice = isValid(price).doubleValue();
+
+        return new ResponseEntity<>(bookService.getAllBooksStockLessThanAndPriceLessThan(bookStock, bookPrice, pageable), HttpStatus.OK);
     }
 
     @GetMapping("/search-username")
