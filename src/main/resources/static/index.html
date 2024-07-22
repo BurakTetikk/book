@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kitap Arama</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            width: 50%;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        input, button {
+            padding: 10px;
+            margin: 10px 0;
+            width: 100%;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            padding: 5px 0;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Kitap Arama</h1>
+    <input type="text" id="title" placeholder="Kitap başlığı ara">
+    <button onclick="searchBooks()">Ara</button>
+    <div id="results">
+        <h2>Arama Sonuçları:</h2>
+        <ul id="bookList"></ul>
+    </div>
+</div>
+
+<script>
+    function searchBooks() {
+        const title = document.getElementById('title').value;
+        fetch(`http://localhost:8080/api/books/get-title?title=${title}`)
+            .then(response => response.json())
+            .then(data => {
+                const bookList = document.getElementById('bookList');
+                bookList.innerHTML = '';
+                if (data.length > 0) {
+                    data.forEach(book => {
+                        const li = document.createElement('li');
+                        li.textContent = book.title;
+                        bookList.appendChild(li);
+                    });
+                } else {
+                    const li = document.createElement('li');
+                    li.textContent = 'No books found';
+                    bookList.appendChild(li);
+                }
+            })
+            .catch(error => console.error('Error:', error));
+    }
+</script>
+</body>
+</html>

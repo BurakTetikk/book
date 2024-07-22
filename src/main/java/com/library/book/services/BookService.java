@@ -144,4 +144,10 @@ public class BookService {
 
         return books.map(bookEntity -> mapperUtil.convert(bookEntity, new BookDto()));
     }
+
+    public List<BookDto> getAllBooksByTitle(String title) {
+        List<BookEntity> books = bookRepository.findAllByTitle(title);
+
+        return books.stream().map(bookEntity -> mapperUtil.convert(bookEntity, new BookDto())).collect(Collectors.toList());
+    }
 }

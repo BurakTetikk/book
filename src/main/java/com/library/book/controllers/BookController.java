@@ -121,12 +121,19 @@ public class BookController {
         return new ResponseEntity<>(bookService.getAllPage(page, size), HttpStatus.OK);
     }
     @GetMapping("/price-less-than")
-    public ResponseEntity<Page<BookDto>> getBooksPriceLessThan(@RequestParam Double price,
+    public ResponseEntity<Page<BookDto>> getBooksPriceLessThan(@RequestParam String price,
                                                                @RequestParam int page,
                                                                @RequestParam int size) {
         Pageable pageable = PageRequest.of(page - 1, size, Sort.by("price").ascending());
+        Double bookPrice;
 
-        return new ResponseEntity<>(bookService.getBooksLessThan(price, pageable), HttpStatus.OK);
+        try {
+            bookPrice = Double.parseDouble(price);
+        } catch (NumberFormatException e) {
+            throw new BadRequestException("Invalid format!!");
+        }
+
+        return new ResponseEntity<>(bookService.getBooksLessThan(bookPrice, pageable), HttpStatus.OK);
     }
     @GetMapping("/author-price")
     public ResponseEntity<List<BookDto>> getAllBooksAuthorContainingAndPriceLessThan(@RequestParam String author,
@@ -147,6 +154,12 @@ public class BookController {
     public ResponseEntity<Page<BookDto>> getAllBooksByUsername(@RequestParam String username,
                                                                @PageableDefault Pageable pageable) {
         return new ResponseEntity<>(bookService.getAllBookByUsername(username, pageable), HttpStatus.OK);
+    }
+
+    @GetMapping("/get-title")
+    public ResponseEntity<List<BookDto>> getAllBooksByTitle(@RequestParam String title) {
+
+        return new ResponseEntity<>(bookService.getAllBooksByTitle(title), HttpStatus.OK);
     }
 
 }

@@ -36,5 +36,6 @@ public interface BookRepository extends JpaRepository<BookEntity, Long> {
     @Query("select b from BookEntity b where b.user.username = :username")
     Page<BookEntity> findByUsername(@Param("username") String username, Pageable pageable);
 
-
+    @Query("select b from BookEntity b where b.title like %:title%")
+    List<BookEntity> findAllByTitle(@Param("title") String title);
 }
