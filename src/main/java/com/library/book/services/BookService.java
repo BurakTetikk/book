@@ -9,7 +9,6 @@ import com.library.book.exceptions.ResourceNotFoundException;
 import com.library.book.mapper.MapperUtil;
 import com.library.book.repositories.BookRepository;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -147,6 +146,10 @@ public class BookService {
 
     public List<BookDto> getAllBooksByTitle(String title) {
         List<BookEntity> books = bookRepository.findAllByTitle(title);
+
+        if (books.isEmpty()) {
+            throw new ResourceNotFoundException("Book not found with title : " + title);
+        }
 
         return books.stream().map(bookEntity -> mapperUtil.convert(bookEntity, new BookDto())).collect(Collectors.toList());
     }
