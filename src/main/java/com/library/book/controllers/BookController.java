@@ -9,6 +9,9 @@ import com.library.book.mapper.MapperUtil;
 import com.library.book.services.BookService;
 import com.library.book.services.UserService;
 import java.util.List;
+import java.util.Map;
+
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -48,13 +51,18 @@ public class BookController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<BookDto> getBookById(@PathVariable String id) {
+    public ResponseEntity<BookDto> getBookById(@PathVariable(required = false) String id) {
+
         Long bookId;
+
+        if (id == null || id.isEmpty()) {
+            throw new BadRequestException("Bad request!");
+        }
 
         try {
             bookId = Long.parseLong(id);
         } catch (NumberFormatException e) {
-            throw new BadRequestException("Invalid ID format!!");
+            throw new BadRequestException("Invalid format!!");
         }
         return new ResponseEntity<>(bookService.getBookById(bookId), HttpStatus.OK);
     }
@@ -66,10 +74,15 @@ public class BookController {
     }
 
     @GetMapping("/search-title")
-    public ResponseEntity<Page<BookDto>> searchBookByTitle(@RequestParam String title,
+    public ResponseEntity<Page<BookDto>> searchBookByTitle(@RequestParam(required = false) String title,
                                                            @PageableDefault(sort = {"title"}) Pageable pageable) {
 
        // Pageable pageable = PageRequest.of(page - 1, size);
+
+        //title parametresi boş mu değil mi validationu
+        if (title == null || title.isEmpty()) {
+            throw new BadRequestException("Bad request!!");
+        }
 
         return new ResponseEntity<>(bookService.searchBooksByTitle(title, pageable), HttpStatus.OK);
     }
@@ -166,7 +179,17 @@ public class BookController {
     }
 
     @GetMapping("/get-title")
-    public ResponseEntity<List<BookDto>> getAllBooksByTitle(@RequestParam String title) {
+    public ResponseEntity<List<BookDto>> getAllBooksByTitle(@RequestParam Map<String, String> params) {
+
+        if (!params.containsKey("title")) {
+            throw new BadRequestException("Parameter must be 'title'!!");
+        }
+
+        String title = params.get("title");
+
+        if (title == null || title.isEmpty()) {
+            throw new BadRequestException("Title parameter must not be empty!!");
+        }
 
         return new ResponseEntity<>(bookService.getAllBooksByTitle(title), HttpStatus.OK);
     }
