@@ -153,4 +153,8 @@ public class BookService {
 
         return books.stream().map(bookEntity -> mapperUtil.convert(bookEntity, new BookDto())).collect(Collectors.toList());
     }
+
+    public void saveAllBooks(List<BookEntity> bookEntities) {
+        bookRepository.saveAll(bookEntities);
+    }
 }
