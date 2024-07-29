@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class BookEntity extends AbstractAuditingEntity<Long>{
+public class BookEntity{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
