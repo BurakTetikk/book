@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.NaturalId;
 
 @Entity
 @Data
@@ -18,6 +19,8 @@ public class BookEntity{
 
     private String title;
     private String author;
+
+    //@NaturalId
     private String ISBN;
     private double price;
     private int stock;

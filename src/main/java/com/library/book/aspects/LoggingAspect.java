@@ -17,9 +17,9 @@ public class LoggingAspect {
     }
 
     //Service katmanının tüm metodlarından sonra loglama yapar ve sonucu döner
-    @AfterReturning(value = "execution(* com.library.book.services.*.*(..))", returning = "result")
+    /*@AfterReturning(value = "execution(* com.library.book.services.*.*(..))", returning = "result")
     public void logAfterMethodExecution(JoinPoint joinPoint, Object result) {
         System.out.println("Executing method: " + joinPoint.getSignature().getName() + ", Result: " + result.toString());
-    }
+    }*/
 
 }
