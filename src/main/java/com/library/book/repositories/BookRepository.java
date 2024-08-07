@@ -22,7 +22,7 @@ public interface BookRepository extends JpaRepository<BookEntity, Long> {
 
     Page<BookEntity> findByUser(UserEntity user, Pageable pageable);
 
-    BookEntity findBookById(Long id);
+    //BookEntity findBookById(Long id);
 
     Page<BookEntity> findByUserAndTitleContaining(UserEntity user, String title, Pageable pageable);
 
