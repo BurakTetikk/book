@@ -1,4 +1,4 @@
-package com.library.book.controller;
+package com.library.book.service;
 
 import com.library.book.dto.BookDto;
 import com.library.book.entity.BookEntity;
@@ -10,17 +10,20 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.util.Optional;
 
+import static org.awaitility.Awaitility.given;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.*;
 
 
 @ExtendWith(MockitoExtension.class)
-public class BookControllerTest {
+public class BookServiceTest {
 
     @Mock
     private BookRepository bookRepository;
@@ -30,8 +33,6 @@ public class BookControllerTest {
 
     @InjectMocks
     private BookService bookService;
-
-
 
     @Test
     public void testGetBookById() throws Exception {
@@ -45,7 +46,7 @@ public class BookControllerTest {
                 null
         );
 
-    /*    BookDto mockBook = new BookDto(
+        BookDto mockBookDto = new BookDto(
                 87L,
                 "Test Book",
                 "Test Author",
@@ -53,13 +54,7 @@ public class BookControllerTest {
                 1687,
                 12,
                 null
-        );*/
-
-        BookDto mockBookDto = new BookDto();
-        mockBookDto.setAuthor("Test Author");
-        mockBookDto.setId(87L);
-        mockBookDto.setTitle("Test Book");
-
+        );
         when(bookRepository.findById(87L)).thenReturn(Optional.of(mockBook));
         doReturn(mockBookDto).when(mapperUtil).convert(eq(mockBook), any(BookDto.class));
 
@@ -72,4 +67,44 @@ public class BookControllerTest {
         verify(mapperUtil).convert(eq(mockBook), any(BookDto.class));
 
     }
+
+
+    @Test
+    public void testDeleteBook() throws Exception {
+
+        Long bookId = 79L;
+
+
+        //Mock davranışı tanımla
+        doNothing().when(bookRepository).deleteById(bookId);
+
+        //Metodu çağır
+        bookService.deleteBook(bookId);
+
+        //deleteById metodun repositoryde çağrıldığını doğrula
+        verify(bookRepository).deleteById(bookId);
+    }
+
+
+/*    @Test
+    public void testSearchBooksByTitle() throws Exception {
+
+        BookEntity mockBook = new BookEntity(
+                87L,
+                "Test Book",
+                "Test Author",
+                "98765345678",
+                1687,
+                12,
+                null
+        );
+
+        Pageable pageable = PageRequest.of(1, 2);
+
+            when(bookRepository.findBooksByTitleContaining("Book", pageable)).thenReturn((Page<BookEntity>) mockBook);
+
+            Page<BookDto> bookEntity = bookService.searchBooksByTitle(mockBook.getTitle(), pageable);
+
+            verify(bookRepository.findBooksByTitleContaining(mockBook.getTitle(), pageable));
+    }*/
 }
