@@ -157,4 +157,8 @@ public class BookService {
     public void saveAllBooks(List<BookEntity> bookEntities) {
         bookRepository.saveAll(bookEntities);
     }
+
+    public List<BookEntity> getAllBooks() {
+        return bookRepository.findAll();
+    }
 }

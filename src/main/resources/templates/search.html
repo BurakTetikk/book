@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kitap Arama</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            width: 50%;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        input, button {
+            padding: 10px;
+            margin: 10px 0;
+            width: 100%;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            padding: 5px 0;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Kitap Arama</h1>
+    <form th:action="@{/api/books/get-title}" method="get">
+        <input type="text" name="title" placeholder="Kitap başlığı ara">
+        <button type="submit">Ara</button>
+    </form>
+    <div id="results" th:if="${books != null}">
+        <h2>Arama Sonuçları:</h2>
+        <ul id="bookList">
+            <li th:each="book : ${books}" th:text="${book.title}"></li>
+            <li th:if="${#lists.isEmpty(books)}">No books found</li>
+        </ul>
+    </div>
+</div>
+</body>
+</html>
