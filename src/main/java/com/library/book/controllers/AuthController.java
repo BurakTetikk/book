@@ -2,17 +2,20 @@ package com.library.book.controllers;
 
 import com.library.book.dto.BookDto;
 import com.library.book.dto.UserDto;
+import com.library.book.entity.BookEntity;
 import com.library.book.entity.UserEntity;
 import com.library.book.services.BookService;
 import com.library.book.services.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
@@ -59,6 +62,57 @@ public class AuthController {
         return "redirect:/register?success";
     }
 
+    @PostMapping("/add-book/save")
+    public String createBook(@Valid @ModelAttribute("book") BookDto bookDto,
+                             BindingResult result,
+                             Model model) {
+
+        if (result.hasErrors()) {
+            model.addAttribute("book", bookDto);
+            return "/add-book";
+        }
+
+        BookEntity bookEntity = new BookEntity();
+        bookEntity.setTitle(bookDto.getTitle());
+        bookEntity.setAuthor(bookDto.getAuthor());
+        bookEntity.setISBN(bookDto.getISBN());
+        bookEntity.setPrice(bookDto.getPrice());
+        bookEntity.setStock(bookDto.getStock());
+
+
+        bookService.saveBook(bookDto);
+
+        model.addAttribute("successMessage", "Kitap başarıyla eklendi!");
+
+        return "redirect:/add-book?success";
+    }
+
+    @GetMapping("/add-book")
+    public String addBook() {
+        /*(@Valid @ModelAttribute("book") BookDto bookDto,
+                          BindingResult result,
+                          Model model) {
+        if (result.hasErrors()) {
+            model.addAttribute("book", bookDto);
+            return "/add-book";
+        }
+
+         BookEntity bookEntity = new BookEntity();
+        bookEntity.setTitle(bookDto.getTitle());
+        bookEntity.setAuthor(bookDto.getAuthor());
+        bookEntity.setISBN(bookDto.getISBN());
+        bookEntity.setPrice(bookDto.getPrice());
+        bookEntity.setStock(bookDto.getStock());
+
+
+        bookService.saveBook(bookDto);
+
+        model.addAttribute("successMessage", "Kitap başarıyla eklendi!");*/
+
+        return "/add-book";
+    }
+
+
     @GetMapping("/users")
     public String users(Model model) {
         List<UserDto> users = userService.getAllUsers();
@@ -71,9 +125,11 @@ public class AuthController {
         return "login";
     }
 
+    @PreAuthorize("hasRole('ROLE_USER')")
     @GetMapping("/search")
-    public String getBooksByTitle(String title) {
-        List<BookDto> bookEntities = bookService.getAllBooksByTitle(title);
+    public String getBooksByTitle(Model model) {
+        List<BookEntity> bookEntities = bookService.getAllBooks();
+        model.addAttribute(bookEntities);
         return "search";
     }
 

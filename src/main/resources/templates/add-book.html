@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kitap Ekleme</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      width: 40%;
+      margin: 50px auto;
+      padding: 20px;
+      background-color: #fff;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
+    }
+    input, button {
+      padding: 10px;
+      margin: 10px 0;
+      width: 100%;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    button {
+      background-color: #28a745;
+      color: #fff;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #218838;
+    }
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>Kitap Ekle</h1>
+  <input type="text" id="title" placeholder="Kitap Başlığı">
+  <input type="text" id="author" placeholder="Yazar">
+  <input type="text" id="ISBN" placeholder="ISBN">
+  <input type="number" id="price" placeholder="Fiyat">
+  <input type="number" id="stock" placeholder="Stok Miktarı">
+  <button onclick="addBook()">Kitap Ekle</button>
+</div>
+
+<script>
+  function addBook() {
+    const book = {
+      title: document.getElementById('title').value,
+      author: document.getElementById('author').value,
+      ISBN: document.getElementById('ISBN').value,
+      price: document.getElementById('price').value,
+      stock: document.getElementById('stock').value
+    };
+
+    fetch('http://localhost:8080/api/books', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(book)
+    })
+            .then(response => {
+              if (response.ok) {
+                alert('Kitap başarıyla eklendi!');
+              } else {
+                alert('Kitap eklenirken bir hata oluştu.');
+              }
+            })
+            .catch(error => console.error('Error:', error));
+  }
+</script>
+</body>
+</html>

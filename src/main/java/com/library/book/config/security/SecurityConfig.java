@@ -31,14 +31,18 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorizeRequest ->
                         authorizeRequest
                                 .requestMatchers("/register/**").permitAll()
-                                .requestMatchers("/index").permitAll()
-                                .requestMatchers("/users").hasRole("ADMIN")
+                                .requestMatchers("/index").hasRole("ADMIN")
+                                .requestMatchers("/search/**").permitAll()
+                                .requestMatchers("/api/books/get-title").hasAnyRole("ADMIN", "USER")
+                                .requestMatchers("/add-book/**").permitAll()
+                                .requestMatchers("/api/books").permitAll()
+                                .requestMatchers("/users").permitAll()
                 )
                 .formLogin(
                         form -> form
                                 .loginPage("/login")
                                 .loginProcessingUrl("/login")
-                                .defaultSuccessUrl("/users")
+                                .defaultSuccessUrl("/index")
                                 .permitAll()
                 ).logout(
                         logout -> logout

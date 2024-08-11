@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,40 +7,89 @@
     <style>
         body {
             font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
         }
         .container {
-            width: 50%;
-            margin: 0 auto;
+            width: 40%;
+            margin: 50px auto;
             padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
         }
         input, button {
             padding: 10px;
             margin: 10px 0;
             width: 100%;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #28a745;
+            color: #fff;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #218838;
         }
         ul {
             list-style-type: none;
             padding: 0;
         }
         li {
-            padding: 5px 0;
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+        li:last-child {
+            border-bottom: none;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        h2 {
+            color: #666;
+        }
+        #results {
+            margin-top: 20px;
         }
     </style>
 </head>
 <body>
 <div class="container">
     <h1>Kitap Arama</h1>
-    <form th:action="@{/api/books/get-title}" method="get">
-        <input type="text" name="title" placeholder="Kitap başlığı ara">
-        <button type="submit">Ara</button>
-    </form>
-    <div id="results" th:if="${books != null}">
+    <input type="text" id="title" placeholder="Kitap başlığı ara">
+    <button onclick="searchBooks()">Ara</button>
+    <div id="results">
         <h2>Arama Sonuçları:</h2>
-        <ul id="bookList">
-            <li th:each="book : ${books}" th:text="${book.title}"></li>
-            <li th:if="${#lists.isEmpty(books)}">No books found</li>
-        </ul>
+        <ul id="bookList"></ul>
     </div>
 </div>
+
+<script>
+    function searchBooks() {
+        const title = document.getElementById('title').value;
+        fetch(`http://localhost:8080/api/books/get-title?title=${title}`)
+            .then(response => response.json())
+            .then(data => {
+                const bookList = document.getElementById('bookList');
+                bookList.innerHTML = '';
+                if (data.length > 0) {
+                    data.forEach(book => {
+                        const li = document.createElement('li');
+                        li.textContent = `${book.title} - ${book.author} (${book.isbn})`;
+                        bookList.appendChild(li);
+                    });
+                } else {
+                    const li = document.createElement('li');
+                    li.textContent = 'No books found';
+                    bookList.appendChild(li);
+                }
+            })
+            .catch(error => console.error('Error:', error));
+    }
+</script>
 </body>
 </html>
